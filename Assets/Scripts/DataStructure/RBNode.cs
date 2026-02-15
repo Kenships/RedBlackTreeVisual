@@ -20,6 +20,7 @@
         public RBNode (RBNode parent, RBNode copy)
         {
             Parent = parent;
+            
             IsRed = copy.IsRed;
             Key = copy.Key;
             IsNil = copy.IsNil;

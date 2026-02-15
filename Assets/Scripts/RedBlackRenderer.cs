@@ -10,28 +10,17 @@ public class RedBlackRenderer : MonoBehaviour
     [SerializeField] private float spacingY = 1f;
     [SerializeField] private float spacingX = 1f;
     [SerializeField] private float size = 1f;
-    [SerializeField] private bool rerender = false;
-
-    [SerializeField] private int testRenderDepth = 5;
 
     [SerializeField] private RBGhostNode ghostRoot;
     [SerializeField] private int currentDepth;
     
-    private readonly RBTree _tree = new();
+    private RBTree _tree = new();
     
-    private List<RBGhostNode> _ghostNodes = new();
-    private List<RBVisualNode> _nodes = new();
-
-    private void OnValidate()
-    {
-        #if UNITY_EDITOR
-        if (rerender)
-        {
-            Render();
-            rerender = false;
-        }
-        #endif
-    }
+    private readonly List<RBGhostNode> _ghostNodes = new();
+    private readonly List<RBVisualNode> _nodes = new();
+    
+    private readonly Stack<RBTree> _undoStack = new();
+    private readonly Stack<RBTree> _redoStack = new();
 
     private void Awake()
     {
@@ -40,22 +29,41 @@ public class RedBlackRenderer : MonoBehaviour
 
     public void Insert(int key)
     {
+        SnapShot();
         _tree.Insert(key);
-        Debug.Log(_tree);
         Render();
     }
 
     public void Delete(int key)
     {
+        SnapShot();
         _tree.LazyDelete(key);
-        Debug.Log(_tree);
         Render();
+    }
+
+    public void Undo()
+    {
+        if (_undoStack.Count > 0)
+        {
+            _redoStack.Push(_tree);
+            _tree = _undoStack.Pop();
+            Render();
+        }
+    }
+
+    public void Redo()
+    {
+        if (_redoStack.Count > 0)
+        {
+            _undoStack.Push(_tree);
+            _tree = _redoStack.Pop();
+            Render();
+        }
     }
 
 
     public void Render()
     {
-        
         int depth = _tree.GetMaxDepth();
         RenderEmptyTreeOfDepth(depth);
         
@@ -88,9 +96,8 @@ public class RedBlackRenderer : MonoBehaviour
                 visual.GoTo(position.transform.position);
                 Vector3 parentPosition = position.Parent ? position.Parent.transform.position : position.transform.position;
                 visual.SetParentPos(parentPosition);
-                visual.SetNil(node.IsNil);
             }
-            
+            visual.SetNil(node.IsNil);
             
             queue.Enqueue(node.Left);
             queue.Enqueue(node.Right);
@@ -102,13 +109,19 @@ public class RedBlackRenderer : MonoBehaviour
         {
             for (int i = _nodes.Count - 1; i >= 0; i--)
             {
-                if (_nodes[i].IsNil)
+                if (!_tree.TryGetKey(_nodes[i].Key, out RBNode _))
                 {
                     Destroy(_nodes[i].gameObject);
                     _nodes.RemoveAt(i);
                 }
             }
         }
+    }
+
+    private void SnapShot()
+    {
+        _redoStack.Clear();
+        _undoStack.Push(RBTree.DeepCopy(_tree));
     }
 
     private void RenderEmptyTreeOfDepth(int depth)
@@ -131,7 +144,7 @@ public class RedBlackRenderer : MonoBehaviour
         float initialY = - (depth - 1) * spacingY / 2f;
         Vector2 pos = new Vector2(initialX, initialY);
         
-        
+        Camera.main.orthographicSize = Mathf.Max(numOfNodes/2f, 5f);
         
         for (int i = 0; i < numOfNodes; i++)
         {

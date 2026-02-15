@@ -10,13 +10,13 @@ namespace DataStructure
         {
             RBTree copyTree = new RBTree();
             
-            var root = tree.Root;
-            copyTree.Root = new RBNode(root.Parent, root.Key, root.IsRed);
-            
+
+            copyTree.Root = tree.Root != null ? new RBNode(null, tree.Root) : null;
+
             Queue<RBNode> originalQ = new Queue<RBNode>();
             Queue<RBNode> copyQ = new Queue<RBNode>();
-            
-            originalQ.Enqueue(root);
+
+            originalQ.Enqueue(tree.Root);
             copyQ.Enqueue(copyTree.Root);
 
             while (originalQ.Count > 0)
@@ -28,31 +28,30 @@ namespace DataStructure
                 {
                     continue;
                 }
-                
+
                 var left = original.Left;
                 var right = original.Right;
-                
-                copy.Left = new RBNode(copy, left);
-                copy.Right = new RBNode(copy, right);
-                
-                originalQ.Enqueue(copy.Left);
-                originalQ.Enqueue(copy.Right);
-                
+
+                copy.Left = left != null ? new RBNode(copy, left) : null;
+                copy.Right = right != null ? new RBNode(copy, right) : null;
+
+                originalQ.Enqueue(original.Left);
+                originalQ.Enqueue(original.Right);
+
                 copyQ.Enqueue(copy.Left);
                 copyQ.Enqueue(copy.Right);
             }
-            
+
             copyTree.Size = tree.Size;
             copyTree._deletedCount = tree._deletedCount;
-            
+
             return copyTree;
         }
-        
+
         public int Size { get; private set; }
-        public RBNode Root {get; private set; }
+        public RBNode Root { get; private set; }
         private int _deletedCount;
-        
-        
+
         public void Insert(int key)
         {
             if (Root == null)
@@ -100,7 +99,7 @@ namespace DataStructure
                 inserted.Right = new RBNode(inserted, key);
                 inserted = inserted.Right;
             }
-            
+
             FixTree(inserted);
             Size++;
         }
@@ -111,11 +110,11 @@ namespace DataStructure
             {
                 return;
             }
-            
+
             target.IsNil = true;
             _deletedCount++;
 
-            if (_deletedCount * 2 > Size)
+            if (_deletedCount * 2 >= Size)
             {
                 RebuildTree();
                 _deletedCount = 0;
@@ -140,7 +139,7 @@ namespace DataStructure
                     sortedNodes.RemoveAt(i);
                 }
             }
-            
+
             int mid = sortedNodes.Count / 2;
             Root = sortedNodes[mid];
             Size++;
@@ -156,7 +155,7 @@ namespace DataStructure
             {
                 return null;
             }
-            
+
             if (start == end)
             {
                 sortedNodes[start].Left = null;
@@ -166,19 +165,20 @@ namespace DataStructure
                 Size++;
                 return sortedNodes[start];
             }
+
             int mid = start + (end - start) / 2;
-            
+
             var current = sortedNodes[mid];
             Size++;
             current.IsRed = false;
-            
+
             current.Left = BuildSubTree(sortedNodes, current, start, mid - 1);
             current.Right = BuildSubTree(sortedNodes, current, mid + 1, end);
-            
+
             //link back to parent
 
             current.Parent = parent;
-            
+
             return current;
         }
 
@@ -194,7 +194,7 @@ namespace DataStructure
             {
                 ToSortedList(result, node.Left);
             }
-            
+
             result.Add(node);
 
             if (node.Right != null)
@@ -206,7 +206,7 @@ namespace DataStructure
         public bool TryGetKey(int key, out RBNode result)
         {
             var current = Root;
-            
+
             while (current != null && key != current.Key)
             {
                 current = key < current.Key ? current.Left : current.Right;
@@ -225,7 +225,7 @@ namespace DataStructure
                 {
                     var uncle = node.Parent.Parent.Right;
 
-                    if (uncle is {IsRed: true})
+                    if (uncle is { IsRed: true })
                     {
                         uncle.IsRed = false;
                         node.Parent.IsRed = false;
@@ -267,7 +267,6 @@ namespace DataStructure
                         node.Parent.IsRed = false;
                         node.Parent.Parent.IsRed = true;
                         RotateLeft(node.Parent.Parent);
-                        
                     }
                 }
             }
@@ -281,8 +280,6 @@ namespace DataStructure
             var parent = node.Parent;
             var newRoot = node.Left;
             var replaceBranch = node.Left.Right;
-            
-            
 
             if (parent == null)
             {
@@ -296,11 +293,12 @@ namespace DataStructure
             {
                 parent.Left = newRoot;
             }
+
             newRoot.Parent = parent;
-            
+
             newRoot.Right = node;
             node.Parent = newRoot;
-            
+
             node.Left = replaceBranch;
             if (replaceBranch != null)
             {
@@ -313,7 +311,7 @@ namespace DataStructure
             var parent = node.Parent;
             var newRoot = node.Right;
             var replaceBranch = node.Right.Left;
-            
+
             if (parent == null)
             {
                 Root = newRoot;
@@ -326,11 +324,12 @@ namespace DataStructure
             {
                 parent.Left = newRoot;
             }
+
             newRoot.Parent = parent;
-            
+
             newRoot.Left = node;
             node.Parent = newRoot;
-            
+
             node.Right = replaceBranch;
 
             if (replaceBranch != null)
@@ -350,10 +349,11 @@ namespace DataStructure
             {
                 if (node.IsNil)
                     continue;
-                
+
                 sb.Append(node);
                 sb.Append(", ");
             }
+
             sb.Append("]");
             return sb.ToString();
         }
@@ -362,17 +362,15 @@ namespace DataStructure
         {
             return GetDepth(Root);
         }
-        
+
         private int GetDepth(RBNode node)
         {
             if (node == null)
             {
                 return 0;
             }
-            
+
             return 1 + Mathf.Max(GetDepth(node.Left), GetDepth(node.Right));
         }
     }
-    
-    
 }
