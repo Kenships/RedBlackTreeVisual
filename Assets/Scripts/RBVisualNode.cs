@@ -7,15 +7,16 @@ using UnityEngine.EventSystems;
 [RequireComponent(typeof(SpriteRenderer))]
 public class RBVisualNode : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
 {
-    [Header("Style")]
-    [SerializeField] private float defaultFontSize = 20f;
-    [SerializeField] private float animationDuration = 1f;
-    [SerializeField] private float lineWidth = 0.1f;
     [Header("References")]
     [SerializeField] private TextMeshProUGUI valueText;
     [SerializeField] private LineRenderer lineRenderer;
     [SerializeField] private Transform lineAnchor;
     [SerializeField] private TextMeshProUGUI x;
+    
+    [Header("Style")]
+    [SerializeField] private float defaultFontSize = 20f;
+    [SerializeField] private float animationDuration = 1f;
+    [SerializeField] private float lineWidth = 0.1f;
     
     [Header("Debug Values")]
     [field: SerializeField] public int Key{get; private set;}

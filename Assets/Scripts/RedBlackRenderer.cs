@@ -5,14 +5,18 @@ using UnityEngine;
 
 public class RedBlackRenderer : MonoBehaviour
 {
+    [Header("References")]
     [SerializeField] private RBGhostNode ghostPrefab;
     [SerializeField] private RBVisualNode nodePrefab;
+    [Header("Style")]
     [SerializeField] private float spacingY = 1f;
     [SerializeField] private float spacingX = 1f;
     [SerializeField] private float size = 1f;
-
+    [Header("DebugValues")]
     [SerializeField] private RBGhostNode ghostRoot;
     [SerializeField] private int currentDepth;
+    [SerializeField] private int treeSize;
+    [SerializeField] private int treeDeletedCount;
     
     private RBTree _tree = new();
     
@@ -30,7 +34,10 @@ public class RedBlackRenderer : MonoBehaviour
     public void Insert(int key)
     {
         SnapShot();
-        _tree.Insert(key);
+        if (!_tree.Insert(key))
+        {
+            _undoStack.Pop();
+        }
         Render();
     }
 
@@ -61,8 +68,13 @@ public class RedBlackRenderer : MonoBehaviour
         }
     }
 
+    private void SnapShot()
+    {
+        _redoStack.Clear();
+        _undoStack.Push(RBTree.DeepCopy(_tree));
+    }
 
-    public void Render()
+    private void Render()
     {
         int depth = _tree.GetMaxDepth();
         RenderEmptyTreeOfDepth(depth);
@@ -116,13 +128,13 @@ public class RedBlackRenderer : MonoBehaviour
                 }
             }
         }
+        
+        //Update debug values
+        treeSize = _tree.Size;
+        treeDeletedCount = _tree.DeletedCount;
     }
 
-    private void SnapShot()
-    {
-        _redoStack.Clear();
-        _undoStack.Push(RBTree.DeepCopy(_tree));
-    }
+    
 
     private void RenderEmptyTreeOfDepth(int depth)
     {
@@ -185,7 +197,7 @@ public class RedBlackRenderer : MonoBehaviour
         currentDepth = depth;
     }
 
-    public RBVisualNode CreateNode(RBGhostNode ghostNode, RBNode node)
+    private RBVisualNode CreateNode(RBGhostNode ghostNode, RBNode node)
     {
         RBVisualNode visualNode = Instantiate(nodePrefab, ghostNode.transform.position, Quaternion.identity);
         
@@ -195,9 +207,8 @@ public class RedBlackRenderer : MonoBehaviour
         
         return visualNode;
     }
-    
-    
-    public RBGhostNode CreateGhostNode(Vector3 position, string id)
+
+    private RBGhostNode CreateGhostNode(Vector3 position, string id)
     {
         RBGhostNode ghostNode = Instantiate(ghostPrefab, position, Quaternion.identity);
         ghostNode.name = id;
@@ -205,7 +216,7 @@ public class RedBlackRenderer : MonoBehaviour
         return ghostNode;
     }
 
-    public RBVisualNode FindNode(int key)
+    private RBVisualNode FindNode(int key)
     {
         foreach (var node in _nodes)
         {

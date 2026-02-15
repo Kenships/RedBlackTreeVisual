@@ -43,22 +43,22 @@ namespace DataStructure
             }
 
             copyTree.Size = tree.Size;
-            copyTree._deletedCount = tree._deletedCount;
+            copyTree.DeletedCount = tree.DeletedCount;
 
             return copyTree;
         }
 
         public int Size { get; private set; }
         public RBNode Root { get; private set; }
-        private int _deletedCount;
+        public int DeletedCount { get; private set; }
 
-        public void Insert(int key)
+        public bool Insert(int key)
         {
             if (Root == null)
             {
                 Root = new RBNode(null, key, false);
                 Size++;
-                return;
+                return true;
             }
 
             RBNode inserted = null;
@@ -76,17 +76,21 @@ namespace DataStructure
                     inserted = current;
                     current = current.Right;
                 }
-                else
+                else if (current.IsNil)
                 {
                     current.IsNil = false;
-                    _deletedCount--;
-                    return;
+                    DeletedCount--;
+                    return false;
+                }
+                else
+                {
+                    return false;
                 }
             }
 
             if (inserted == null)
             {
-                return;
+                return false;
             }
 
             if (key < inserted.Key)
@@ -102,6 +106,8 @@ namespace DataStructure
 
             FixTree(inserted);
             Size++;
+
+            return true;
         }
 
         public void LazyDelete(int key)
@@ -112,12 +118,12 @@ namespace DataStructure
             }
 
             target.IsNil = true;
-            _deletedCount++;
+            DeletedCount++;
 
-            if (_deletedCount * 2 >= Size)
+            if (DeletedCount * 2 >= Size)
             {
                 RebuildTree();
-                _deletedCount = 0;
+                DeletedCount = 0;
             }
         }
 
