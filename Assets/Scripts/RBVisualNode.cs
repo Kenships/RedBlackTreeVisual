@@ -5,43 +5,64 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(SpriteRenderer))]
-public class RBVisualNode : MonoBehaviour, IEquatable<RBVisualNode>, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
+public class RBVisualNode : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
 {
+    [Header("Style")]
     [SerializeField] private float defaultFontSize = 20f;
     [SerializeField] private float animationDuration = 1f;
-    [SerializeField] private TextMeshProUGUI textMeshPro;
+    [SerializeField] private float lineWidth = 0.1f;
+    [Header("References")]
+    [SerializeField] private TextMeshProUGUI valueText;
     [SerializeField] private LineRenderer lineRenderer;
     [SerializeField] private Transform lineAnchor;
-    [SerializeField] private float lineWidth = 0.1f;
     [SerializeField] private TextMeshProUGUI x;
-    public int Key;
+    
+    [Header("Debug Values")]
+    [field: SerializeField] public int Key{get; private set;}
+    [field: SerializeField] public bool IsNil { get; private set; }
+    
     private SpriteRenderer _spriteRenderer;
-    private Vector3 size;
     private RedBlackRenderer _redBlackRenderer;
-    public bool IsNil;
+    
+    private Vector3 _size;
+    private bool _moveStarted;
     
     private void Awake()
     {
         _spriteRenderer = GetComponent<SpriteRenderer>();
+        //Initialize Line Values
         lineRenderer.positionCount = 2;
         lineRenderer.startWidth = lineWidth;
         lineRenderer.endWidth = lineWidth;
+        
     }
 
     public void Init(bool isRed, int key, float size, RedBlackRenderer redBlackRenderer)
     {
+        //Initialize Values
         SetColor(isRed);
         Key = key;
-        textMeshPro.text = key.ToString();
-        textMeshPro.fontSize = size * defaultFontSize;
-        this.size = size * Vector3.one;
-        transform.localScale = new Vector3(size, size, size);
+        _size = size * Vector3.one;
         _redBlackRenderer = redBlackRenderer;
+        
+        //Configure text
+        valueText.text = key.ToString();
+        valueText.fontSize = size * defaultFontSize;
+        
+        x.fontSize = size * defaultFontSize;
+        
+        transform.localScale = new Vector3(size, size, size);
+        
     }
 
     public void SetColor(bool isRed)
     {
         Color target = isRed ? Color.red : Color.black;
+
+        if (_spriteRenderer.color == target)
+        {
+            return;
+        }
 
         Tween.Color(
             target: _spriteRenderer,
@@ -53,6 +74,12 @@ public class RBVisualNode : MonoBehaviour, IEquatable<RBVisualNode>, IPointerDow
 
     public void GoTo(Vector3 pos)
     {
+        if (transform.position == pos)
+        {
+            return;
+        }
+
+        _moveStarted = true;
         Tween.Position(
             target: transform,
             endValue: pos,
@@ -63,11 +90,19 @@ public class RBVisualNode : MonoBehaviour, IEquatable<RBVisualNode>, IPointerDow
 
     public void SetParentPos(Vector3 pos)
     {
+        if (lineAnchor.position == pos && !_moveStarted)
+        {
+            lineAnchor.position = pos;
+            return;
+        }
+
+        _moveStarted = false;
         Tween.Position(
             target: lineAnchor,
             endValue: pos,
             duration: animationDuration,
-            ease: Ease.InOutExpo
+            ease: Ease.InOutExpo,
+            startDelay: 0.05f
         );
     }
 
@@ -84,21 +119,6 @@ public class RBVisualNode : MonoBehaviour, IEquatable<RBVisualNode>, IPointerDow
         lineRenderer.SetPosition(1, lineAnchor.position);
     }
 
-    public bool Equals(RBVisualNode other)
-    {
-        if (other is null)
-        {
-            return false;
-        }
-
-        if (ReferenceEquals(this, other))
-        {
-            return true;
-        }
-
-        return base.Equals(other) && Key == other.Key;
-    }
-
     public override int GetHashCode()
     {
         return HashCode.Combine(base.GetHashCode(), Key);
@@ -113,7 +133,7 @@ public class RBVisualNode : MonoBehaviour, IEquatable<RBVisualNode>, IPointerDow
         
         Tween.Scale(
             target: transform,
-            endValue: size,
+            endValue: _size,
             duration: 0.2f,
             ease: Ease.InOutExpo
         );
@@ -127,7 +147,7 @@ public class RBVisualNode : MonoBehaviour, IEquatable<RBVisualNode>, IPointerDow
         x.color = new Color(x.color.r, x.color.g, x.color.b, 255f);
         Tween.Scale(
             target: transform,
-            endValue: size * 1.05f,
+            endValue: _size * 1.05f,
             duration: 0.2f,
             ease: Ease.InOutExpo
         );
@@ -139,15 +159,5 @@ public class RBVisualNode : MonoBehaviour, IEquatable<RBVisualNode>, IPointerDow
             return;
         IsNil = true;
         _redBlackRenderer.Delete(Key);
-    }
-
-    public static bool operator ==(RBVisualNode left, RBVisualNode right)
-    {
-        return Equals(left, right);
-    }
-
-    public static bool operator !=(RBVisualNode left, RBVisualNode right)
-    {
-        return !Equals(left, right);
     }
 }

@@ -109,12 +109,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RBVisualNode
   defaultFontSize: 0.7
   animationDuration: 1
-  textMeshPro: {fileID: 2784762384231155090}
+  lineWidth: 0.1
+  valueText: {fileID: 2784762384231155090}
   lineRenderer: {fileID: 3329189507902628912}
   lineAnchor: {fileID: 7909885107106093242}
-  lineWidth: 0.1
   x: {fileID: 8321560846226279817}
-  Key: 0
+  <Key>k__BackingField: 0
+  <IsNil>k__BackingField: 0
 --- !u!1 &3755441743272364812
 GameObject:
   m_ObjectHideFlags: 0

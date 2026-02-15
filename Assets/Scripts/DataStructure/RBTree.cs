@@ -142,11 +142,10 @@ namespace DataStructure
 
             int mid = sortedNodes.Count / 2;
             Root = sortedNodes[mid];
-            Size++;
             Root.Left = BuildSubTree(sortedNodes, Root, 0, mid - 1);
             Root.Right = BuildSubTree(sortedNodes, Root, mid + 1, sortedNodes.Count - 1);
-
             Root.IsRed = false;
+            Size++;
         }
 
         private RBNode BuildSubTree(List<RBNode> sortedNodes, RBNode parent, int start, int end)
@@ -161,6 +160,7 @@ namespace DataStructure
                 sortedNodes[start].Left = null;
                 sortedNodes[start].Right = null;
                 sortedNodes[start].Parent = parent;
+                //Initialize Leaves to be Red
                 sortedNodes[start].IsRed = true;
                 Size++;
                 return sortedNodes[start];
@@ -169,15 +169,17 @@ namespace DataStructure
             int mid = start + (end - start) / 2;
 
             var current = sortedNodes[mid];
-            Size++;
-            current.IsRed = false;
 
             current.Left = BuildSubTree(sortedNodes, current, start, mid - 1);
             current.Right = BuildSubTree(sortedNodes, current, mid + 1, end);
 
-            //link back to parent
+            // link back to parent
 
             current.Parent = parent;
+            
+            //Initialize to Black
+            current.IsRed = false;
+            Size++;
 
             return current;
         }
