@@ -120,11 +120,6 @@ public class RBVisualNode : MonoBehaviour, IPointerDownHandler, IPointerEnterHan
         lineRenderer.SetPosition(1, lineAnchor.position);
     }
 
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(base.GetHashCode(), Key);
-    }
-
     public void OnPointerExit(PointerEventData eventData)
     {
         if (IsNil)

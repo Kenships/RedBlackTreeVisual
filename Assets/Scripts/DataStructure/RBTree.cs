@@ -8,10 +8,10 @@ namespace DataStructure
     {
         public static RBTree DeepCopy(RBTree tree)
         {
-            RBTree copyTree = new RBTree();
-            
-
-            copyTree.Root = tree.Root != null ? new RBNode(null, tree.Root) : null;
+            RBTree copyTree = new RBTree
+            {
+                Root = tree.Root != null ? new RBNode(null, tree.Root) : null
+            };
 
             Queue<RBNode> originalQ = new Queue<RBNode>();
             Queue<RBNode> copyQ = new Queue<RBNode>();
@@ -148,13 +148,13 @@ namespace DataStructure
 
             int mid = sortedNodes.Count / 2;
             Root = sortedNodes[mid];
-            Root.Left = BuildSubTree(sortedNodes, Root, 0, mid - 1);
-            Root.Right = BuildSubTree(sortedNodes, Root, mid + 1, sortedNodes.Count - 1);
+            Root.Left = BuildSubTree(sortedNodes, Root, 0, mid - 1, 0);
+            Root.Right = BuildSubTree(sortedNodes, Root, mid + 1, sortedNodes.Count - 1, 0);
             Root.IsRed = false;
             Size++;
         }
 
-        private RBNode BuildSubTree(List<RBNode> sortedNodes, RBNode parent, int start, int end)
+        private RBNode BuildSubTree(List<RBNode> sortedNodes, RBNode parent, int start, int end, int depth)
         {
             if (start > end)
             {
@@ -166,8 +166,7 @@ namespace DataStructure
                 sortedNodes[start].Left = null;
                 sortedNodes[start].Right = null;
                 sortedNodes[start].Parent = parent;
-                //Initialize Leaves to be Red
-                sortedNodes[start].IsRed = true;
+                sortedNodes[start].IsRed = Mathf.CeilToInt(Mathf.Log(sortedNodes.Count)/Mathf.Log(2)) == depth + 1;
                 Size++;
                 return sortedNodes[start];
             }
@@ -176,8 +175,8 @@ namespace DataStructure
 
             var current = sortedNodes[mid];
 
-            current.Left = BuildSubTree(sortedNodes, current, start, mid - 1);
-            current.Right = BuildSubTree(sortedNodes, current, mid + 1, end);
+            current.Left = BuildSubTree(sortedNodes, current, start, mid - 1, depth + 1);
+            current.Right = BuildSubTree(sortedNodes, current, mid + 1, end, depth + 1);
 
             // link back to parent
 
