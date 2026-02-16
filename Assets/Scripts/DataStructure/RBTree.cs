@@ -145,13 +145,9 @@ namespace DataStructure
                     sortedNodes.RemoveAt(i);
                 }
             }
-
-            int mid = sortedNodes.Count / 2;
-            Root = sortedNodes[mid];
-            Root.Left = BuildSubTree(sortedNodes, Root, 0, mid - 1, 0);
-            Root.Right = BuildSubTree(sortedNodes, Root, mid + 1, sortedNodes.Count - 1, 0);
+            
+            Root = BuildSubTree(sortedNodes, null, 0, sortedNodes.Count - 1, 1);
             Root.IsRed = false;
-            Size++;
         }
 
         private RBNode BuildSubTree(List<RBNode> sortedNodes, RBNode parent, int start, int end, int depth)
@@ -166,15 +162,19 @@ namespace DataStructure
                 sortedNodes[start].Left = null;
                 sortedNodes[start].Right = null;
                 sortedNodes[start].Parent = parent;
-                sortedNodes[start].IsRed = Mathf.CeilToInt(Mathf.Log(sortedNodes.Count)/Mathf.Log(2)) == depth + 1;
+                
+                Debug.Log($"Key {sortedNodes[start]}, Count {sortedNodes.Count} : {Mathf.CeilToInt(Mathf.Log(sortedNodes.Count)/Mathf.Log(2))} == {depth}");
+                
+                sortedNodes[start].IsRed = Mathf.CeilToInt(Mathf.Log(sortedNodes.Count + 1)/Mathf.Log(2)) == depth;
                 Size++;
                 return sortedNodes[start];
             }
 
             int mid = start + (end - start) / 2;
-
+            
             var current = sortedNodes[mid];
 
+            Debug.Log($"Key {current.Key}, Depth {depth}");
             current.Left = BuildSubTree(sortedNodes, current, start, mid - 1, depth + 1);
             current.Right = BuildSubTree(sortedNodes, current, mid + 1, end, depth + 1);
 
