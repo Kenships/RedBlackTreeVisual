@@ -2,12 +2,15 @@ using System;
 using System.Collections.Generic;
 using DataStructure;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class RedBlackRenderer : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private RBGhostNode ghostPrefab;
     [SerializeField] private RBVisualNode nodePrefab;
+    [SerializeField] private InputAction undoAction;
+    [SerializeField] private InputAction redoAction;
     [Header("Style")]
     [SerializeField] private float spacingY = 1f;
     [SerializeField] private float spacingX = 1f;
@@ -29,6 +32,24 @@ public class RedBlackRenderer : MonoBehaviour
     private void Awake()
     {
         currentDepth = Int32.MinValue;
+        undoAction.Enable();
+        redoAction.Enable();
+    }
+
+    private void Start()
+    {
+        undoAction.performed += UndoActionOnPerformed;
+        redoAction.performed += RedoActionOnPerformed;
+    }
+
+    private void RedoActionOnPerformed(InputAction.CallbackContext obj)
+    {
+        Redo();
+    }
+
+    private void UndoActionOnPerformed(InputAction.CallbackContext obj)
+    {
+        Undo();
     }
 
     public void Insert(int key)
@@ -152,11 +173,14 @@ public class RedBlackRenderer : MonoBehaviour
         List<RBGhostNode> lastLayer = new();
         int numOfNodes = Mathf.RoundToInt(Mathf.Pow(2, depth - 1));
         
+        Camera.main.orthographicSize = Mathf.Max(numOfNodes/2f, 5f);
+        spacingY = Mathf.Max(numOfNodes / 2f, 5f) / 5;
+        
         float initialX = - (numOfNodes - 1) * spacingX / 2f;
         float initialY = - (depth - 1) * spacingY / 2f;
         Vector2 pos = new Vector2(initialX, initialY);
         
-        Camera.main.orthographicSize = Mathf.Max(numOfNodes/2f, 5f);
+        
         
         for (int i = 0; i < numOfNodes; i++)
         {

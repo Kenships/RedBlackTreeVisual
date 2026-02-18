@@ -1,5 +1,7 @@
 ﻿using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 public class AddNodeUI : MonoBehaviour
 {
@@ -8,6 +10,18 @@ public class AddNodeUI : MonoBehaviour
 
     public void AddNode()
     {
-        rbRenderer.Insert(int.Parse(inputField.text));
+        if (!int.TryParse(inputField.text, out int value))
+            return;
+        inputField.text = "";
+        inputField.ActivateInputField();
+        rbRenderer.Insert(value);
+    }
+
+    public void Update()
+    {
+        if (Keyboard.current.enterKey.wasPressedThisFrame)
+        {
+            AddNode();
+        }
     }
 }
