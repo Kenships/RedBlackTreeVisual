@@ -146,6 +146,12 @@ namespace DataStructure
                 }
             }
             
+            if (sortedNodes.Count == 0)
+            {
+                Root = null;
+                return;
+            }
+            
             Root = BuildSubTree(sortedNodes, null, 0, sortedNodes.Count - 1, 1);
             Root.IsRed = false;
         }
