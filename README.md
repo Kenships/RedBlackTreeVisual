@@ -7,6 +7,18 @@ Windows:
 - Unzip the folder
 - Run RBVisualizer.exe
 
+Linux:
+- Download [RBVisualizerX.Xx.x86_64.zip](https://github.com/Kenships/RedBlackTreeVisual/releases) from the latest release.
+- Unzip the folder
+- Add executable permissions ```chmod -x RBVisualizerX.Xx.x86_64```
+- Run RBVisualizerX.Xx.x86_64
+
+Mac:
+-  Download [RBVisualizerX.Xx.app.zip](https://github.com/Kenships/RedBlackTreeVisual/releases) from the latest release.
+-  Unzip the folder
+-  Add executable permissions ```chmod -R -x RBVisualizerX.Xx.app```
+-  Run RBVisualizerX.Xx.app
+  
 ## Roadmap
 - WebGL build and hosting
 - Tree splitting / tree merging
