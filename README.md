@@ -3,14 +3,14 @@ A simple tool to help visualize the construction of a red-black tree
 
 ## Try It For Yourself!
 Windows:
-- download RBVisualizer.zip from the latest release.
-- unzip the folder
-- run RBVisualizer.exe
+- Download [RBVisualizerX.Xx.zip](https://github.com/Kenships/RedBlackTreeVisual/releases) from the latest release.
+- Unzip the folder
+- Run RBVisualizer.exe
 
 ## Roadmap
 - WebGL build and hosting
-- tree splitting / tree merging
-- true node removal
+- Tree splitting / tree merging
+- True node removal
 - 2-3-4 tree view
 - Step-by-step view of each tree operation
 
