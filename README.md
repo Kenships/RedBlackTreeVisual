@@ -1,9 +1,11 @@
 # RedBlackTreeVisual
 A simple tool to help visualize the construction of a red-black tree
 
-## Try It For Yourself!
+## Try Online [Here](https://play.unity.com/en/games/009e4197-6471-4b19-b603-52c485a8bc21/red-black-tree-visualizer)
+
+## Download for your device here:
 **NOTE: You may need to provide extra permissions to run the builds**
-Try Online [Here](https://play.unity.com/en/games/009e4197-6471-4b19-b603-52c485a8bc21/red-black-tree-visualizer)
+
 
 Windows:
 - Download [RBVisualizerX.Xx.zip](https://github.com/Kenships/RedBlackTreeVisual/releases) from the latest release.
