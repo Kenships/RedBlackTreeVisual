@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class MenuButton : MonoBehaviour
 {
     [SerializeField] private RectTransform tray;
-    [SerializeField] private Image trayImage;
+    [SerializeField] private CanvasGroup trayImage;
     [SerializeField] private Button tutorialButton;
     [SerializeField] private Button exitButton;
     [SerializeField] private CanvasGroup tutorialImage;
@@ -27,7 +27,7 @@ public class MenuButton : MonoBehaviour
         _trayWidth = tray.rect.width;
         
         tray.sizeDelta = new Vector2(_trayWidth, _trayWidth);
-        trayImage.color = new Color(trayImage.color.r, trayImage.color.g, trayImage.color.b, 0f);
+        trayImage.alpha = 0f;
 
         tutorialButton.interactable = false;
         exitButton.interactable = false;

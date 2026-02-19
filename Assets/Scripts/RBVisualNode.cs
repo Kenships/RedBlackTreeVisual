@@ -8,12 +8,16 @@ using UnityEngine.EventSystems;
 public class RBVisualNode : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
 {
     [Header("References")]
+    [SerializeField] private SpriteRenderer spriteBorder;
+    [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private TextMeshProUGUI valueText;
     [SerializeField] private LineRenderer lineRenderer;
     [SerializeField] private Transform lineAnchor;
     [SerializeField] private TextMeshProUGUI x;
-    
-    [Header("Style")]
+
+    [Header("Style")] 
+    [SerializeField] private Color black;
+    [SerializeField] private Color red;
     [SerializeField] private float defaultFontSize = 20f;
     [SerializeField] private float animationDuration = 1f;
     [SerializeField] private float lineWidth = 0.1f;
@@ -22,20 +26,25 @@ public class RBVisualNode : MonoBehaviour, IPointerDownHandler, IPointerEnterHan
     [field: SerializeField] public int Key{get; private set;}
     [field: SerializeField] public bool IsNil { get; private set; }
     
-    private SpriteRenderer _spriteRenderer;
     private RedBlackRenderer _redBlackRenderer;
+    private Color _blackBorderColor;
+    private Color _redBorderColor;
     
     private Vector3 _size;
     private bool _moveStarted;
     
     private void Awake()
     {
-        _spriteRenderer = GetComponent<SpriteRenderer>();
         //Initialize Line Values
         lineRenderer.positionCount = 2;
         lineRenderer.startWidth = lineWidth;
         lineRenderer.endWidth = lineWidth;
         
+        //Initialize Border Values
+        Color.RGBToHSV(red, out float hueRed, out float saturationRed, out float valueRed);
+        Color.RGBToHSV(black, out float hueBlack, out float saturationBlack, out float valueBlack);
+        _blackBorderColor = Color.HSVToRGB(hueBlack, saturationBlack, valueBlack - .1f);
+        _redBorderColor = Color.HSVToRGB(hueRed, saturationRed, valueRed - .1f);
     }
 
     public void Init(bool isRed, int key, float size, RedBlackRenderer redBlackRenderer)
@@ -58,18 +67,26 @@ public class RBVisualNode : MonoBehaviour, IPointerDownHandler, IPointerEnterHan
 
     public void SetColor(bool isRed)
     {
-        Color target = isRed ? Color.red : Color.black;
+        Color target = isRed ? red : black;
+        Color borderColor = isRed ? _redBorderColor : _blackBorderColor;
 
-        if (_spriteRenderer.color == target)
+        if (spriteRenderer.color == target)
         {
             return;
         }
 
         Tween.Color(
-            target: _spriteRenderer,
+            target: spriteRenderer,
             endValue: target,
             duration: animationDuration,
             ease: Ease.InOutExpo
+        ).Group(
+            Tween.Color(
+                target: spriteBorder,
+                endValue: borderColor,
+                duration: animationDuration,
+                ease: Ease.InOutExpo
+            )
         );
     }
 
