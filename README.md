@@ -1,5 +1,6 @@
 # RedBlackTreeVisual
 A simple tool to help visualize the construction of a red-black tree
+![RedBlackTreeGif](https://github.com/user-attachments/assets/1c80e828-5105-4029-9563-ba9c34ffa245)
 
 ## Try Online [Here](https://play.unity.com/en/games/009e4197-6471-4b19-b603-52c485a8bc21/red-black-tree-visualizer)
 
@@ -33,3 +34,5 @@ Mac:
 
 ## License
 This project is licensed under the MIT License — see the LICENSE file for details.
+
+
